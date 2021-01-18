@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/csv"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -41,19 +42,15 @@ func init() {
 func main() {
 	flag.Parse()
 	http.Handle("/metrics", promhttp.Handler())
-
 	go checkAgents()
-
+	go checkhealthy()
 	log.Fatal(http.ListenAndServe(*addr, nil))
 }
 
 func checkAgents() {
-
 	t := time.NewTicker(20 * time.Second)
 	defer t.Stop()
-
 	var out bytes.Buffer
-
 	for {
 		select {
 		case <-t.C:
@@ -86,8 +83,35 @@ func checkAgents() {
 			agentsActive.Set(float64(active))
 			fmt.Printf("Found %d active out of %d total agents\n", active, total)
 			out.Reset()
-
 		}
 	}
+}
 
+func checkhealthy() {
+    cmd := exec.Command("/var/ossec/bin/ossec-control", "-j", "status")
+    var str = cmd.Stdout
+    basicReader := strings.NewReader(str)
+    var b = make([]byte, basicReader.Size())
+    _, err :=basicReader.Read(b)
+    if err !=nil {
+     	panic(err)
+    }
+    output := map[string]interface{
+    }{
+    }
+    err = json.Unmarshal(b, &output)
+    if err !=nil{
+      	panic(err)
+    }
+    for _,data :=range output["data"].([]interface {}){
+        data :=data.(map[string]interface{})
+      	daemon := strings.Replace(data["daemon"].(string), "-","_",-1)
+        if data["status"].(string) == "running"{
+       	fmt.Printf("%s_up 1",daemon)
+       	fmt.Println()
+   	} else if data["status"].(string) == "stopped"{
+   		fmt.Printf("%s_up 0",daemon)
+   		fmt.Println()
+   	}
+    }
 }
