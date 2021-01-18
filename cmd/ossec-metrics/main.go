@@ -88,30 +88,32 @@ func checkAgents() {
 }
 
 func checkhealthy() {
+    var out bytes.Buffer
     cmd := exec.Command("/var/ossec/bin/ossec-control", "-j", "status")
-    var str = cmd.Stdout
-    basicReader := strings.NewReader(str)
-    var b = make([]byte, basicReader.Size())
-    _, err :=basicReader.Read(b)
-    if err !=nil {
-     	panic(err)
+    cmd.Stdout = &out
+    err := cmd.Run()
+    if err != nil {
+       log.Println(err)
     }
+    basicReader := strings.NewReader(out.String())
+    var b = make([]byte, basicReader.Size())
     output := map[string]interface{
     }{
     }
     err = json.Unmarshal(b, &output)
     if err !=nil{
-      	panic(err)
+	panic(err)
     }
     for _,data :=range output["data"].([]interface {}){
         data :=data.(map[string]interface{})
-      	daemon := strings.Replace(data["daemon"].(string), "-","_",-1)
+	daemon := strings.Replace(data["daemon"].(string), "-","_",-1)
         if data["status"].(string) == "running"{
-       	fmt.Printf("%s_up 1",daemon)
-       	fmt.Println()
-   	} else if data["status"].(string) == "stopped"{
-   		fmt.Printf("%s_up 0",daemon)
-   		fmt.Println()
-   	}
+	fmt.Printf("%s_up 1",daemon)
+	fmt.Println()
+	} else if data["status"].(string) == "stopped"{
+		fmt.Printf("%s_up 0",daemon)
+		fmt.Println()
+	}
     }
+    out.Reset()
 }
