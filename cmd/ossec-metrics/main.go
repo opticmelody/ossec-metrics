@@ -30,6 +30,8 @@ var (
 	})
 )
 
+
+
 func init() {
 	// Register the summary and the histogram with Prometheus's default registry.
 	prometheus.MustRegister(agentsTotal)
@@ -38,11 +40,33 @@ func init() {
 	prometheus.MustRegister(prometheus.NewBuildInfoCollector())
 }
 
+
+type Collector struct {
+
+}
+
+func (c *Collector) Describe(ch chan<- *prometheus.Desc) {
+	ch <- prometheus.NewDesc("empty", "empty", nil, nil)
+}
+
+func (c *Collector) Collect(ch chan<- prometheus.Metric) {
+	checkhealthy(ch)
+	log.Println("End collect metric values")
+}
+
+func prometheusMetricshandler(w http.ResponseWriter, r *http.Request) {
+	registry := prometheus.NewRegistry()
+	collector := &Collector{}
+	registry.MustRegister(collector)
+	h := promhttp.HandlerFor(registry, promhttp.HandlerOpts{})
+	h.ServeHTTP(w, r)
+}
+
+
 func main() {
 	flag.Parse()
-	http.Handle("/metrics", promhttp.Handler())
+	http.HandleFunc("/metrics", prometheusMetricshandler)
 	go checkAgents()
-	go checkhealthy()
 	log.Fatal(http.ListenAndServe(*addr, nil))
 }
 
@@ -86,7 +110,7 @@ func checkAgents() {
 	}
 }
 
-func checkhealthy() {
+func checkhealthy(ch chan <- prometheus.Metric) {
     var out bytes.Buffer
     cmd := exec.Command("/var/ossec/bin/ossec-control", "-j", "status")
     cmd.Stdout = &out
@@ -111,11 +135,17 @@ func checkhealthy() {
         data :=data.(map[string]interface{})
 	daemon := strings.Replace(data["daemon"].(string), "-","_",-1)
         if data["status"].(string) == "running"{
-	fmt.Printf("%s_up 1",daemon)
-	fmt.Println()
+			ch<- prometheus.MustNewConstMetric(
+				prometheus.NewDesc(fmt.Sprintf("%s_up",daemon), fmt.Sprintf("%s_up",daemon), nil, nil),
+				prometheus.GaugeValue,
+				1,
+			)
 	} else if data["status"].(string) == "stopped"{
-		fmt.Printf("%s_up 0",daemon)
-		fmt.Println()
+			ch<- prometheus.MustNewConstMetric(
+				prometheus.NewDesc(fmt.Sprintf("%s_up",daemon), fmt.Sprintf("%s_up",daemon), nil, nil),
+				prometheus.GaugeValue,
+				0,
+			)
 	}
     }
     out.Reset()
