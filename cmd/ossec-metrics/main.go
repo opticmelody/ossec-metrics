@@ -12,7 +12,6 @@ import (
 	"os/exec"
 	"strings"
 	"time"
-
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -97,12 +96,16 @@ func checkhealthy() {
     }
     basicReader := strings.NewReader(out.String())
     var b = make([]byte, basicReader.Size())
+	_, err =basicReader.Read(b)
+	if err !=nil {
+		panic(err)
+	}
     output := map[string]interface{
     }{
     }
     err = json.Unmarshal(b, &output)
     if err !=nil{
-	panic(err)
+		panic(err)
     }
     for _,data :=range output["data"].([]interface {}){
         data :=data.(map[string]interface{})
