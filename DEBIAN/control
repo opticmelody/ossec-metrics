@@ -2,7 +2,7 @@ Package: ossec-metrics
 Version: VERSION-PATCH~DISTRO
 Section: base
 Priority: optional
-Architecture: any
+Architecture: amd64
 Source: ossec-metrics
 Build-Depends: fakeroot, make, lsb-release, openssl
 Maintainer: Example <example@example.com>
