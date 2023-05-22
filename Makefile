@@ -12,7 +12,7 @@ deb: deb_$(OS)
 
 deb_Linux: build
 	mkdir -p tmp/usr/bin
-	cp -pR DEBIAN tmp/
+	cp -pR lib DEBIAN tmp/
 	cp ossec-metrics tmp/usr/bin/
 	sed -i "s/VERSION/$(VERSION)/g" tmp/DEBIAN/control
 	sed -i "s/PATCH/$(PATCH)/g"     tmp/DEBIAN/control

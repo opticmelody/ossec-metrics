@@ -1,0 +1,14 @@
+[Unit]
+Description=Ossec Metrics exposes OSSEC info for prometheus to scrape
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/ossec-metrics
+#WorkingDirectory=/var/run/ossec-metrics/
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

@@ -12,4 +12,5 @@
 *.out
 tmp/
 ossec-metrics
+ossec-metrics-*
 *.deb
