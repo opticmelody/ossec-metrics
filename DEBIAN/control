@@ -1,0 +1,9 @@
+Package: ossec-metrics
+Version: VERSION-PATCH~DISTRO
+Section: base
+Priority: optional
+Architecture: any
+Source: ossec-metrics
+Build-Depends: fakeroot, make, lsb-release, openssl
+Maintainer: Example <example@example.com>
+Description: deb for ossec-metrics
