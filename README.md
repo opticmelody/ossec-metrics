@@ -13,3 +13,5 @@ To cross compile for a Raspberry Pi
 ```shell
 GOOS=linux GOARCH=arm GOARM=7 go build -o ossec-metrics-linux-armv7 cmd/ossec-metrics/main.go
 ```
+
+Please see https://grafana.com/blog/2019/08/22/homelab-security-with-ossec-loki-prometheus-and-grafana-on-a-raspberry-pi/ for more details on usage.
