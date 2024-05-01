@@ -51,7 +51,7 @@ jobs:
         # Artifact name
         name: arm64 # optional, default is artifact
         # A file, directory or wildcard pattern that describes what to upload
-        path: ossec-metrics-armv7
+        path: ossec-metrics-arm64
         if-no-files-found: error
         retention-days: 0
         compression-level: 6
@@ -63,7 +63,7 @@ jobs:
         # Artifact name
         name: amd64 # optional, default is artifact
         # A file, directory or wildcard pattern that describes what to upload
-        path: ossec-metrics-armv7
+        path: ossec-metrics-amd64
         if-no-files-found: error
         retention-days: 0
         compression-level: 6
@@ -75,7 +75,7 @@ jobs:
         # Artifact name
         name: i386 # optional, default is artifact
         # A file, directory or wildcard pattern that describes what to upload
-        path: ossec-metrics-armv7
+        path: ossec-metrics-i386
         if-no-files-found: error
         retention-days: 0
         compression-level: 6
