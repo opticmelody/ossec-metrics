@@ -50,7 +50,7 @@ func (c *Collector) Describe(ch chan<- *prometheus.Desc) {
 }
 
 func (c *Collector) Collect(ch chan<- prometheus.Metric) {
-	checkhealthy(ch)
+	checkHealthy(ch)
 	log.Println("End collect metric values")
 }
 
@@ -110,7 +110,7 @@ func checkAgents() {
 	}
 }
 
-func checkhealthy(ch chan <- prometheus.Metric) {
+func checkHealthy(ch chan <- prometheus.Metric) {
     var out bytes.Buffer
     cmd := exec.Command("/var/ossec/bin/ossec-control", "-j", "status")
     cmd.Stdout = &out
